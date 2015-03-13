@@ -29,8 +29,16 @@ class Data:
             else:
               	 # couldn't firebase, couldn't read a config file
               	 
+              	 
               
             
+    def overwrite_firebase_state(self):
+        try:
+        		self.firebase.put('/state', json.dumps(state))
+        except IOError:
+            return False
+        finally:
+            return True
     
     def start_firebase(self, configfile="firebase.txt"):
         lines = [line.strip() for line in open(configfile)]
@@ -82,12 +90,6 @@ class Data:
 	 def new_channeldata(channelnum):
         return { channelnum : {x : 100 for x in range(0, 24* 60, 30)}}
 
-        
-    def begin(self):
-        print "Data thread beginning"
-        self.__running = True
-        self.__workerThread = threading.Thread(target=self.__threadWorker)
-        self.__workerThread.start()
         
 
     def __threadWorker(self):
