@@ -19,30 +19,35 @@ class PaludariumWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="Paludarium")
         self.connect("delete-event", Gtk.main_quit)
-        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        self.box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
         self.add(self.box)
+	self.boxleft = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+	self.boxright = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+	self.box.pack_start(self.boxleft, True, True, 0)
+	self.box.pack_start(self.boxright, True, True, 0)
         self.humidity = Gtk.Label("Humidity")
-        self.box.pack_start(self.humidity, True, True, 0)
+        self.boxleft.pack_start(self.humidity, True, True, 0)
         self.temperature = Gtk.Label("temperature")
-        self.box.pack_start(self.temperature, True, True, 0)
+        self.boxleft.pack_start(self.temperature, True, True, 0)
         self.current_program = Gtk.Label("current_program")
-        self.box.pack_start(self.current_program, True, True, 0)
+        self.boxleft.pack_start(self.current_program, True, True, 0)
         self.lights_control = Gtk.Label("lights control")
-        self.box.pack_start(self.lights_control, True, True, 0)
+        self.boxright.pack_start(self.lights_control, True, True, 0)
         self.lights_0 = Gtk.Label("lights 0")
-        self.box.pack_start(self.lights_0, True, True, 0)
+        self.boxright.pack_start(self.lights_0, True, True, 0)
         self.lights_1 = Gtk.Label("lights 1")
-        self.box.pack_start(self.lights_1, True, True, 0)
+        self.boxright.pack_start(self.lights_1, True, True, 0)
         self.lights_2 = Gtk.Label("lights 2")
-        self.box.pack_start(self.lights_2, True, True, 0)
+        self.boxright.pack_start(self.lights_2, True, True, 0)
         self.lights_3 = Gtk.Label("lights 3")
-        self.box.pack_start(self.lights_3, True, True, 0)
+        self.boxright.pack_start(self.lights_3, True, True, 0)
         self.relays_control = Gtk.Label("relays control")
-        self.box.pack_start(self.relays_control, True, True, 0)
+        self.boxleft.pack_start(self.relays_control, True, True, 0)
         self.relays_0 = Gtk.Label("relay 0")
-        self.box.pack_start(self.relays_0, True, True, 0)
+        self.boxleft.pack_start(self.relays_0, True, True, 0)
         self.relays_1 = Gtk.Label("relay 1")
-        self.box.pack_start(self.relays_1, True, True, 0)
+        self.boxleft.pack_start(self.relays_1, True, True, 0)
+	self.fullscreen()
 
     def map_status(self):
         self.set_title(data.state["name"])
@@ -59,16 +64,16 @@ class PaludariumWindow(Gtk.Window):
         self.relays_1.set_text(data.state["state"]["relays"]["names"][1] + ": " +  str(data.state["state"]["relays"]["values"][1]))
 
     def update(self):
-        GObject.timeout_add(1, self.map_status())
+        GObject.timeout_add(1, self.map_status)
 
 def timeout():
     global data
+    print ("timeout")
     if data.connected:
         try:
             data.ref.child("state/temperature").set(int(data.state["state"]["temperature"]) + 1)
         except ConnectionError:
             data.log.info("Could not write to Firebase")
-
     GObject.timeout_add(2000, timeout)
 
 
